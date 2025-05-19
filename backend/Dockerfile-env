@@ -1,9 +1,0 @@
-FROM node:lts-bookworm
-
-WORKDIR /backend
-
-RUN ln -s /usr/bin/python3 /usr/bin/python
-
-EXPOSE 5000
-
-CMD ["npm", "run", "dev"]
