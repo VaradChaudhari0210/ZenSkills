@@ -16,6 +16,7 @@ dist-ssr
 # Editor directories and files
 .vscode/*
 frontend/eslint.config.js
+frontend/.env
 backend/prisma/migrations
 !.vscode/settings.json
 !.vscode/extensions.json
