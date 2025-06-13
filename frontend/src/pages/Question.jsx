@@ -5,7 +5,7 @@ import { axiosInstance } from "../apis/commons";
 import { useParams } from "react-router-dom";
 import axios from "axios";
 
-const API_URL = "http://localhost:5000";
+const API_URL = import.meta.env.VITE_API_URL;
 const DEFAULT_AVATAR = "https://ui-avatars.com/api/?background=random&name=";
 
 export default function Question() {

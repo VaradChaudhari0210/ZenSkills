@@ -57,19 +57,33 @@ exports.getSession = async (req, res) => {
 
   if (session) {
     const map = {};
+    const now = DateTime.utc();
+    console.log(`Current time: ${now}`);
 
     session.SessionBooking.forEach((booking) => {
-      const timeSlot = {
+
+      // Skip bookings that are in the past
+      const bookingEnd = DateTime.fromJSDate(booking.end_time).toUTC();
+      const bookingDate = DateTime.fromJSDate(booking.date).toUTC().startOf('day');
+      const today = now.startOf('day');
+      
+      console.log(
+        `Processing booking: ${booking.id}, end time: ${bookingEnd.toISO()}`)
+      if (bookingDate > today || (bookingDate.equals(today) && bookingEnd > now)) {
+        const timeSlot = {
         day: DateTime.fromJSDate(booking.date).weekdayLong,
         from: DateTime.fromJSDate(booking.start_time).toFormat("hh:mm a"),
         to: DateTime.fromJSDate(booking.end_time).toFormat("hh:mm a"),
         available: !booking.user_id,
         bookingId: booking.id,
       };
+      console.log(
+        `Processing booking: ${JSON.stringify(timeSlot)} for day: ${timeSlot.day}`)
 
       const prevArray = map[timeSlot.day] ?? [];
       prevArray.push(timeSlot);
       map[timeSlot.day] = prevArray;
+      }
     });
 
     session.timeSlots = map;
@@ -538,37 +552,37 @@ exports.updateBookingStatus = async (req, res) => {
       });
 
       // Refund coins to user and deduct from mentor
-      // if (booking.session.price > 0) {
-      //   await prisma.user.update({
-      //     where: { id: booking.user.id },
-      //     data: { coins: { increment: booking.session.price } },
-      //   });
+      if (booking.session.price > 0) {
+        await prisma.user.update({
+          where: { id: booking.user.id },
+          data: { coins: { increment: booking.session.price } },
+        });
 
-      //   await prisma.user.update({
-      //     where: { id: booking.session.mentor.User.id },
-      //     data: { coins: { decrement: booking.session.price } },
-      //   });
+        await prisma.user.update({
+          where: { id: booking.session.mentor.User.id },
+          data: { coins: { decrement: booking.session.price } },
+        });
 
-      //   // Add transaction for user
-      //   await prisma.Transaction.create({
-      //     data: {
-      //       amount: session.price,
-      //       type: "REFUND",
-      //       user_id: user.id,
-      //       session_id: session.id,
-      //     },
-      //   });
+        // Add transaction for user
+        await prisma.Transaction.create({
+          data: {
+            amount: session.price,
+            type: "REFUND",
+            user_id: user.id,
+            session_id: session.id,
+          },
+        });
 
-      //   // Add transaction for mentor
-      //   await prisma.Transaction.create({
-      //     data: {
-      //       amount: session.price,
-      //       type: "RETURN",
-      //       user_id: mentor.id,
-      //       session_id: session.id,
-      //     },
-      //   });
-      // }
+        // Add transaction for mentor
+        await prisma.Transaction.create({
+          data: {
+            amount: session.price,
+            type: "RETURN",
+            user_id: mentor.id,
+            session_id: session.id,
+          },
+        });
+      }
 
     } else if (status === "cancelled" && booking.status === "accepted") {
       if (booking.session.mentor.User.googleRefreshToken) {

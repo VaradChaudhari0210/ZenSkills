@@ -367,7 +367,7 @@ const applyJob = async (req, res) => {
       }),
     };
 
-    // await transporter.sendMail(mailOptions);
+    await transporter.sendMail(mailOptions);
     console.log("Email sent to mentor");
     res.status(200).json({ message: "Application submitted successfully" });
   } catch (error) {

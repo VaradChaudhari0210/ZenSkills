@@ -6,7 +6,7 @@ import { fetchTags } from "../apis/explore";
 import { useNavigate } from "react-router-dom";
 import { axiosInstance } from "../apis/commons";
 
-const API_URL = "http://localhost:5000";
+const API_URL = import.meta.env.VITE_API_URL;
 const DEFAULT_AVATAR = "https://ui-avatars.com/api/?background=random&name=";
 
 export default function Community() {

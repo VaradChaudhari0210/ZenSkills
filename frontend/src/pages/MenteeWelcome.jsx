@@ -28,7 +28,7 @@ import { getAllWorkshops } from '../apis/workshops';
 
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" />
 
-const API_URL = "http://localhost:5000";
+const API_URL = import.meta.env.VITE_API_URL;
 
 const DUMMY_WORKSHOPS = [
   {

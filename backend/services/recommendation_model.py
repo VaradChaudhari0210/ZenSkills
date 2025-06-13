@@ -18,8 +18,8 @@ logging.basicConfig(
 
 DB_CONFIG = {
     "dbname": "postgres",
-    "user": "henil",
-    "password": "root",
+    "user": "postgres",
+    "password": "varad",
     "host": "localhost",
     "port": "5432"
 }
@@ -29,9 +29,9 @@ def get_role_id_by_user_id(user_id: str, role: str) -> str:
         conn = psycopg2.connect(**DB_CONFIG)
         cursor = conn.cursor()
         if role == 'mentee':
-            query = 'SELECT id FROM "ZenSchema"."mentee" WHERE user_id = %s'
+            query = 'SELECT uid FROM "ZenSchema"."mentee" WHERE user_id = %s'
         elif role == 'mentor':
-            query = 'SELECT id FROM "ZenSchema"."mentor" WHERE user_id = %s'
+            query = 'SELECT uid FROM "ZenSchema"."mentor" WHERE user_id = %s'
         else:
             raise ValueError("Role must be 'mentee' or 'mentor'.")
         cursor.execute(query, (user_id,))
